@@ -7,7 +7,6 @@ services:
       - "127.0.0.1:4510-4559:4510-4559"  # external services port range
     environment:
       - DEBUG=${DEBUG-}
-      - LAMBDA_EXECUTOR=local
       - DOCKER_HOST=unix:///var/run/docker.sock
       - SERVICES=sqs   
     volumes:
@@ -19,8 +18,8 @@ services:
       timeout: 5s
       retries: 3
 
-  lambda:
-    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_lambda}"
+  nodeapp:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_nodeapp}"
     build: 
       context: ./
       dockerfile: ./Dockerfile
