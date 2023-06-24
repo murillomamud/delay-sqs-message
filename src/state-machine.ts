@@ -1,4 +1,7 @@
-const AWS = require('aws-sdk');
+import { AWSError, StepFunctions } from 'aws-sdk';
+import { StartExecutionOutput } from 'aws-sdk/clients/stepfunctions';
+import { createStateMachineResponse, message, sendMessageToStateMachineResponse } from './types';
+
 const dotenv = require('dotenv');
 const stateMachine = require('./state-machine.json');
 
@@ -6,9 +9,9 @@ const logger = console;
 
 dotenv.config();
 
-async function createStateMachine(roleArn) {
+export async function createStateMachine(roleArn: string): Promise<createStateMachineResponse | null> {
   logger.log('creating state machine');
-  const stepFunctions = new AWS.StepFunctions({
+  const stepFunctions = new StepFunctions({
     endpoint: process.env.ENDPOINT,
     sslEnabled: false,
     region: 'us-east-1',
@@ -26,7 +29,7 @@ async function createStateMachine(roleArn) {
   return { machineArn: resultCreateStateMachine.stateMachineArn, stepFunctions };
 }
 
-async function sendMessageToStateMachine(machineArn, message, stepFunctions) {
+export async function sendMessageToStateMachine(machineArn: string, message: message, stepFunctions: StepFunctions): Promise<sendMessageToStateMachineResponse> {
   logger.log('sending message to state machine');
 
   const paramsMessageStateMachine = {
@@ -34,14 +37,11 @@ async function sendMessageToStateMachine(machineArn, message, stepFunctions) {
     input: JSON.stringify({ message }),
   };
 
-  const resultStepFunction = await stepFunctions.startExecution(paramsMessageStateMachine).promise();
+  const resultStepFunction = await stepFunctions.startExecution(paramsMessageStateMachine).promise() as StartExecutionOutput;
 
   logger.log(resultStepFunction);
 
-  return resultStepFunction;
+  return {StartExecutionOutput: resultStepFunction, stepFunctions};
 }
 
-module.exports = {
-  createStateMachine,
-  sendMessageToStateMachine,
-};
+
