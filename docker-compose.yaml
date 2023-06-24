@@ -1,0 +1,36 @@
+services:
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      - DEBUG=${DEBUG-}
+      - LAMBDA_EXECUTOR=local
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVICES=sqs   
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  lambda:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_lambda}"
+    build: 
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_REGION=us-east-1
+      - AWS_SQS_ENDPOINT=http://localstack:4566      
+      - ENDPOINT=http://localstack:4566
+    depends_on:
+      localstack:
+        condition: service_healthy

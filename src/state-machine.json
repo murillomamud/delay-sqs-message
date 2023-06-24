@@ -1,0 +1,20 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "Wait",
+    "States": {
+      "Wait": {
+        "Type": "Wait",
+        "Seconds": 10,
+        "Next": "SQS SendMessage"
+      },
+      "SQS SendMessage": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sqs:sendMessage",
+        "Parameters": {
+          "MessageBody.$": "$",
+          "QueueUrl": "https://localhost:4566/000000000000/test-queue"
+        },
+        "End": true
+      }
+    }
+  }
