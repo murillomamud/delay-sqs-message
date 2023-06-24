@@ -14,4 +14,4 @@ npm run integration
 
 ### Change the delay
 
-In file `src/state-machine.json` change the value of `seconds` property to the time you want.
+In file `state-machine.ts` change the value of `seconds` property to the time you want in variable stateMachine.

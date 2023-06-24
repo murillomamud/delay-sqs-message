@@ -1,8 +1,6 @@
 import { IAM } from 'aws-sdk';
 import { config } from 'dotenv';
 
-const policie = require('./policie.json');
-
 const logger = console;
 
 config();
@@ -10,15 +8,26 @@ config();
 export async function createRole(): Promise<string> {
   logger.log('creating role');
 
+  const policy = {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Action: ['sqs:SendMessage'],
+        Resource: ['*'],
+      },
+    ],
+  };
+
   const iam = new IAM({
     apiVersion: '2010-05-08',
     endpoint: process.env.ENDPOINT,
     sslEnabled: false,
-    region: 'us-east-1'
+    region: 'us-east-1',
   });
 
   const params = {
-    AssumeRolePolicyDocument: JSON.stringify(policie),
+    AssumeRolePolicyDocument: JSON.stringify(policy),
     RoleName: 'state-machine-role',
   };
 

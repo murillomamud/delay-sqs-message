@@ -1,22 +1,26 @@
-import type { SQS } from "@aws-sdk/client-sqs";
-import type { AWSError, StepFunctions } from "aws-sdk";
-import { StartExecutionOutput } from "aws-sdk/clients/stepfunctions";
+import type { SQS } from '@aws-sdk/client-sqs';
+import type { StepFunctions } from 'aws-sdk';
+import { StartExecutionOutput } from 'aws-sdk/clients/stepfunctions';
 
-export type createQueueResponse = {
-    queueURL: string | undefined;
-    sqsSession: SQS;
-}
+export type CreateQueueResponse = {
+  queueURL: string | undefined;
+  sqsSession: SQS;
+};
 
-export type createStateMachineResponse = {
-    machineArn: string | undefined;
-    stepFunctions: StepFunctions;
-}
+export type CreateStateMachineResponse = {
+  machineArn: string | undefined;
+  stepFunctions: StepFunctions;
+};
 
-export type message = {
-    [key: string]: string;
-}
+export type Message = {
+  [key: string]: string;
+};
 
-export type sendMessageToStateMachineResponse = {
-    StartExecutionOutput: StartExecutionOutput;
-    stepFunctions: StepFunctions;
-}
+export type SendMessageToStateMachineResponse = {
+  StartExecutionOutput: StartExecutionOutput;
+  stepFunctions: StepFunctions;
+};
+
+export type MessageBody = {
+  message: Message;
+};

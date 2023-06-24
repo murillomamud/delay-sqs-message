@@ -1,3 +1,4 @@
 .env
 volume
 node_modules
+build
