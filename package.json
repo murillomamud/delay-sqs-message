@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "integration": "docker-compose up --build --exit-code-from nodeapp"
+    "integration": "docker-compose up --build --exit-code-from nodeapp",
+    "lint": "eslint **/*.js",
+    "lint:fix": "npm run lint -- --fix"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +16,9 @@
     "aws-sdk": "^2.1404.0",
     "chance": "^1.1.11",
     "dotenv": "^16.3.1",
+    "eslint": "^8.43.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "expect": "^29.5.0"
   }
 }

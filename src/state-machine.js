@@ -1,45 +1,47 @@
 const AWS = require('aws-sdk');
 const dotenv = require('dotenv');
+const stateMachine = require('./state-machine.json');
+
+const logger = console;
 
 dotenv.config();
 
 async function createStateMachine(roleArn) {
+  logger.log('creating state machine');
+  const stepFunctions = new AWS.StepFunctions({
+    endpoint: process.env.ENDPOINT,
+    sslEnabled: false,
+    region: 'us-east-1',
+  });
 
-    console.log('creating state machine')
-    const stepFunctions = new AWS.StepFunctions({
-        endpoint: process.env.ENDPOINT,
-        sslEnabled: false,
-        region: 'us-east-1',
-    });
+  const paramsCreateStateMachine = {
+    definition: JSON.stringify(stateMachine),
+    name: 'state-machine',
+    roleArn,
+  };
 
-    const paramsCreateStateMachine = {
-        definition: JSON.stringify(require('./state-machine.json')),
-        name: 'state-machine',
-        roleArn: roleArn,
-    };
+  const resultCreateStateMachine = await stepFunctions.createStateMachine(paramsCreateStateMachine).promise();
+  logger.log(`State Machine Created: ${resultCreateStateMachine}`);
 
-    const resultCreateStateMachine = await stepFunctions.createStateMachine(paramsCreateStateMachine).promise();
-    console.log(`State Machine Created: ${resultCreateStateMachine}`);
-
-    return { machineArn: resultCreateStateMachine.stateMachineArn, stepFunctions }
+  return { machineArn: resultCreateStateMachine.stateMachineArn, stepFunctions };
 }
 
 async function sendMessageToStateMachine(machineArn, message, stepFunctions) {
-    console.log('sending message to state machine')
+  logger.log('sending message to state machine');
 
-    const paramsMessageStateMachine = {
-        stateMachineArn: machineArn,
-        input: JSON.stringify({ message: message })
-    };
+  const paramsMessageStateMachine = {
+    stateMachineArn: machineArn,
+    input: JSON.stringify({ message }),
+  };
 
-    const resultStepFunction = await stepFunctions.startExecution(paramsMessageStateMachine).promise();
+  const resultStepFunction = await stepFunctions.startExecution(paramsMessageStateMachine).promise();
 
-    console.log(resultStepFunction);
+  logger.log(resultStepFunction);
 
-    return resultStepFunction;
+  return resultStepFunction;
 }
 
 module.exports = {
-    createStateMachine,
-    sendMessageToStateMachine,
-}
+  createStateMachine,
+  sendMessageToStateMachine,
+};

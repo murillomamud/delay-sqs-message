@@ -1,4 +1,3 @@
-const AWS = require('aws-sdk');
 const Chance = require('chance');
 const { expect } = require('expect');
 const { createQueue, receiveMessage } = require('./src/sqs');
